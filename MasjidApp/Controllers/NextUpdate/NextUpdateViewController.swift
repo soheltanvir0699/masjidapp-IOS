@@ -1,0 +1,357 @@
+//
+//  NextUpdateViewController.swift
+//  MasjidApp
+//
+//  Created by Sohel Rana on 11/12/22.
+//
+
+import UIKit
+import DatePickerDialog
+
+class NextUpdateViewController: UIViewController {
+    @IBOutlet weak var name: UITextField!
+    
+    @IBOutlet weak var nextView: BoxView!
+    @IBOutlet weak var ishaBtn: UIButton!
+    @IBOutlet weak var magribBtn: UIButton!
+    @IBOutlet weak var asrBtn: UIButton!
+    @IBOutlet weak var dhuhrBtn: UIButton!
+    @IBOutlet weak var fajrBtn: UIButton!
+    @IBOutlet weak var saveBtn: UIButton!
+    @IBOutlet weak var nextDate: UIButton!
+    var update_id = ""
+    var fajrTime = ""
+    var dhuhrTime = ""
+    var asrTime = ""
+    var magribTime = ""
+    var ishaTime = ""
+    let dateFormatter24 = DateFormatter()
+    var sch_Data:schUpdDAta?
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        dateFormatter24.dateFormat = "HH:mm"
+
+        navigationController?.navigationBar.tintColor = .systemBlue
+        self.saveBtn.layer.cornerRadius = 10
+        if sch_Data != nil {
+//            nextDate.isUserInteractionEnabled = false.
+            self.fajrTime = (sch_Data?.Fajr)!
+            self.dhuhrTime = (sch_Data?.Dhuhr)!
+            self.asrTime = (sch_Data?.Asr)!
+            self.magribTime = (sch_Data?.Maghrib)!
+            self.ishaTime = (sch_Data?.Isha)!
+            self.name.text = sch_Data?.name
+            if constant.TimeFormat == 12 {
+                self.ishaBtn.setTitle(self.dateTimeChangeFormat(str:(self.sch_Data?.Isha)!), for: .normal)
+                self.magribBtn.setTitle(self.dateTimeChangeFormat(str:(self.sch_Data?.Maghrib)!), for: .normal)
+                self.asrBtn.setTitle(self.dateTimeChangeFormat(str:(self.sch_Data?.Asr)!), for: .normal)
+                self.dhuhrBtn.setTitle(self.dateTimeChangeFormat(str:(self.sch_Data?.Dhuhr)!), for: .normal)
+                self.fajrBtn.setTitle(self.dateTimeChangeFormat(str:(self.sch_Data?.Fajr)!), for: .normal)
+            }else {
+                self.ishaBtn.setTitle(sch_Data?.Isha, for: .normal)
+                self.magribBtn.setTitle(sch_Data?.Maghrib, for: .normal)
+                self.asrBtn.setTitle(sch_Data?.Asr, for: .normal)
+                self.dhuhrBtn.setTitle(sch_Data?.Dhuhr, for: .normal)
+                self.fajrBtn.setTitle(sch_Data?.Fajr, for: .normal)
+            }
+            nextDate.setTitle(sch_Data?.update_date, for: .normal)
+        }else {
+            myMasjidApiCalling()
+            nextDate.isUserInteractionEnabled = true
+        }
+        // Do any additional setup after loading the view.
+    }
+    
+    fileprivate func myMasjidApiCalling() {
+        Service.MyMasjidListApi { result in
+            if result.success {
+                if result.data?.count != 0 {
+                    self.fajrTime = result.data![0].Fajr!
+                    self.dhuhrTime = result.data![0].Dhuhr!
+                    self.asrTime = result.data![0].Asr!
+                    self.magribTime = result.data![0].Maghrib!
+                    self.ishaTime = result.data![0].Isha!
+                    if constant.TimeFormat == 12 {
+                        self.ishaBtn.setTitle(self.dateTimeChangeFormat(str:result.data![0].Isha!), for: .normal)
+                        self.magribBtn.setTitle(self.dateTimeChangeFormat(str:result.data![0].Maghrib!), for: .normal)
+                        self.asrBtn.setTitle(self.dateTimeChangeFormat(str:result.data![0].Asr!), for: .normal)
+                        self.dhuhrBtn.setTitle(self.dateTimeChangeFormat(str:result.data![0].Dhuhr!), for: .normal)
+                        self.fajrBtn.setTitle(self.dateTimeChangeFormat(str:result.data![0].Fajr!), for: .normal)
+                    }else {
+                        self.ishaBtn.setTitle(result.data![0].Isha!, for: .normal)
+                        self.magribBtn.setTitle(result.data![0].Maghrib!, for: .normal)
+                        self.asrBtn.setTitle(result.data![0].Asr!, for: .normal)
+                        self.dhuhrBtn.setTitle(result.data![0].Dhuhr!, for: .normal)
+                        self.fajrBtn.setTitle(result.data![0].Fajr!, for: .normal)
+                    }
+                }
+            }
+        } failure: { err in
+        }
+    }
+    
+    func dateTimeChangeFormat(str stringWithDate: String) -> String {
+        let inFormatter = DateFormatter()
+        inFormatter.locale = Locale(identifier: "en_US_POSIX")
+        inFormatter.dateFormat = "HH:mm:ss"
+
+        let outFormatter = DateFormatter()
+        outFormatter.locale = Locale(identifier: "en_US_POSIX")
+        outFormatter.dateFormat = "hh:mm a"
+
+        let inStr = stringWithDate
+        let date = inFormatter.date(from: inStr)!
+        return outFormatter.string(from: date)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        navigationController?.navigationBar.tintColor = .white
+    }
+    @IBAction func dateAction(_ sender: Any) {
+        DatePickerDialog().show("DatePicker", doneButtonTitle: "Done", cancelButtonTitle: "Cancel", datePickerMode: .date) { date in
+            if let dt = date {
+                print(dt)
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd"
+                DispatchQueue.main.async {
+                   
+                self.nextDate.setTitle(dateFormatter.string(from: dt), for: .normal)
+                }
+            }
+        }
+    }
+    @IBAction func fajrAction(_ sender: Any) {
+        DatePickerDialog().show("DatePicker", doneButtonTitle: "Done", cancelButtonTitle: "Cancel", datePickerMode: .time) { date in
+            if let dt = date {
+                print(dt)
+                let dateFormatter = DateFormatter()
+                if constant.TimeFormat == 12 {
+                    dateFormatter.dateFormat = "hh:mm a"
+                    DispatchQueue.main.async {
+                       
+                    self.fajrBtn.setTitle(dateFormatter.string(from: dt), for: .normal)
+                        self.fajrTime = self.dateFormatter24.string(from: dt)+":00"
+                    }
+                }else {
+                dateFormatter.dateFormat = "HH:mm"
+                
+                DispatchQueue.main.async {
+                   
+                self.fajrBtn.setTitle(dateFormatter.string(from: dt)+":00", for: .normal)
+                    self.fajrTime = (self.fajrBtn.titleLabel?.text)!
+                }
+                }
+            }
+        }
+    }
+    
+    @IBAction func dhuhrAction(_ sender: Any) {
+        DatePickerDialog().show("DatePicker", doneButtonTitle: "Done", cancelButtonTitle: "Cancel", datePickerMode: .time) { date in
+            if let dt = date {
+                print(dt)
+                self.dhuhrTime = self.dateFormatter24.string(from: dt)+":00"
+                let dateFormatter = DateFormatter()
+                if constant.TimeFormat == 12 {
+                    dateFormatter.dateFormat = "hh:mm a"
+                    self.dhuhrBtn.setTitle(dateFormatter.string(from: dt), for: .normal)
+                }else {
+                dateFormatter.dateFormat = "HH:mm"
+                
+                DispatchQueue.main.async {
+                self.dhuhrBtn.setTitle(dateFormatter.string(from: dt)+":00", for: .normal)
+                }
+                }
+            }
+        }
+    }
+    @IBAction func asrAction(_ sender: Any) {
+        DatePickerDialog().show("DatePicker", doneButtonTitle: "Done", cancelButtonTitle: "Cancel", datePickerMode: .time) { date in
+            if let dt = date {
+                print(dt)
+                self.asrTime = self.dateFormatter24.string(from: dt)+":00"
+                let dateFormatter = DateFormatter()
+                if constant.TimeFormat == 12 {
+                    dateFormatter.dateFormat = "hh:mm a"
+                    self.asrBtn.setTitle(dateFormatter.string(from: dt), for: .normal)
+                }else {
+                dateFormatter.dateFormat = "HH:mm"
+                
+                DispatchQueue.main.async {
+                self.asrBtn.setTitle(dateFormatter.string(from: dt)+":00", for: .normal)
+                }
+                }
+            }
+        }
+    }
+    @IBAction func magribAction(_ sender: Any) {
+        DatePickerDialog().show("DatePicker", doneButtonTitle: "Done", cancelButtonTitle: "Cancel", datePickerMode: .time) { date in
+            if let dt = date {
+                print(dt)
+                self.magribTime = self.dateFormatter24.string(from: dt)+":00"
+                let dateFormatter = DateFormatter()
+                if constant.TimeFormat == 12 {
+                    dateFormatter.dateFormat = "hh:mm a"
+                    self.magribBtn.setTitle(dateFormatter.string(from: dt), for: .normal)
+                }else {
+                dateFormatter.dateFormat = "HH:mm"
+                
+                DispatchQueue.main.async {
+                self.magribBtn.setTitle(dateFormatter.string(from: dt)+":00", for: .normal)
+                }
+                }
+            }
+        }
+    }
+    @IBAction func ishaAction(_ sender: Any) {
+        DatePickerDialog().show("DatePicker", doneButtonTitle: "Done", cancelButtonTitle: "Cancel", datePickerMode: .time) { date in
+            if let dt = date {
+                print(dt)
+                self.ishaTime = self.dateFormatter24.string(from: dt)+":00"
+                let dateFormatter = DateFormatter()
+                if constant.TimeFormat == 12 {
+                    dateFormatter.dateFormat = "hh:mm a"
+                    DispatchQueue.main.async {
+                    self.ishaBtn.setTitle(dateFormatter.string(from: dt), for: .normal)
+                    }
+                }else {
+                dateFormatter.dateFormat = "HH:mm"
+                
+                DispatchQueue.main.async {
+                self.ishaBtn.setTitle(dateFormatter.string(from: dt)+":00", for: .normal)
+                }
+                }
+            }
+        }
+    }
+    
+    @IBAction func saveAction(_ sender: UIButton) {
+        
+        guard let nameTxt = name.text, nameTxt != "" else {
+            showToast(message: "Name Not Found.", styleColor: .white, backgroundColor: .red)
+            return
+        }
+        
+        guard let dhuhrTxt = dhuhrBtn.titleLabel?.text, dhuhrTxt != "00:00:00" else {
+            showToast(message: "Dhuhr Time Not Found.", styleColor: .white, backgroundColor: .red)
+            return
+        }
+        guard let fajrTxt = fajrBtn.titleLabel?.text, fajrTxt != "00:00:00" else {
+            showToast(message: "Fjar Time Not Found.", styleColor: .white, backgroundColor: .red)
+            return
+        }
+        
+        guard let asrTxt = asrBtn.titleLabel?.text, asrTxt != "00:00:00" else {
+            showToast(message: "Asr Time Not Found.", styleColor: .white, backgroundColor: .red)
+            return
+        }
+        guard let magribTxt = magribBtn.titleLabel?.text, magribTxt != "00:00:00" else {
+            showToast(message: "Maghrib Time Not Found.", styleColor: .white, backgroundColor: .red)
+            return
+        }
+        guard let ishaTxt = ishaBtn.titleLabel?.text, ishaTxt != "00:00:00" else {
+            showToast(message: "Isha Time Not Found.", styleColor: .white, backgroundColor: .red)
+            return
+        }
+        guard let nextdateTxt = nextDate.titleLabel?.text, ishaTxt != "YYYY-MM-DD" else {
+            showToast(message: "Isha Time Not Found.", styleColor: .white, backgroundColor: .red)
+            return
+        }
+        DispatchQueue.main.async {
+            self.showLoader(controller: self)
+        }
+        if magribTxt == "Sunset" {
+            Service.getDayINfo(city: constant.city.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!, country: constant.country.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!) { results in
+            self.magribTime = (results.data?.timings?.Sunset)! + ":00"
+                print(results)
+                if self.update_id == "" {
+                    Service.NextUpdate(name:nameTxt,date:nextdateTxt,Fajr: self.fajrTime, Dhuhr: self.dhuhrTime, Asr: self.asrTime, Maghrib: self.magribTime, Isha: self.ishaTime) { result in
+                    DispatchQueue.main.async {
+                        self.hideLoader()
+                    }
+                    if result.success {
+                        self.showToast(message: result.message!, styleColor: .white, backgroundColor: .systemGreen)
+                    }else {
+                        self.showToast(message: result.message!, styleColor: .white, backgroundColor: .red)
+                    }
+                } failure: { err in
+                    DispatchQueue.main.async {
+                        self.hideLoader()
+                    }
+                    self.showToast(message: err, styleColor: .white, backgroundColor: .red)
+                }
+                    
+                } else {
+                    Service.Sch_Update(name:nameTxt,date:nextdateTxt,id: "\(self.sch_Data!.id)", Fajr: self.fajrTime, Dhuhr: self.dhuhrTime, Asr: self.asrTime, Maghrib: self.magribTime, Isha: self.ishaTime)  { result in
+                        DispatchQueue.main.async {
+                            self.hideLoader()
+                        }
+                        if result.success {
+                            self.showToast(message: result.message!, styleColor: .white, backgroundColor: .systemGreen)
+                        }else {
+                            self.showToast(message: result.message!, styleColor: .white, backgroundColor: .red)
+                        }
+                    } failure: { err in
+                        DispatchQueue.main.async {
+                            self.hideLoader()
+                        }
+                        self.showToast(message: err, styleColor: .white, backgroundColor: .red)
+                    }
+
+                }
+        } failure: { _ in
+            self.showToast(message: "Please Try Again.", styleColor: .white, backgroundColor: .red)
+            DispatchQueue.main.async {
+                self.hideLoader()
+            }
+        }
+        }else {
+        if update_id == "" {
+            Service.NextUpdate(name:nameTxt,date:nextdateTxt,Fajr: fajrTime, Dhuhr: dhuhrTime, Asr: asrTime, Maghrib: magribTime, Isha: ishaTime) { result in
+            DispatchQueue.main.async {
+                self.hideLoader()
+            }
+            if result.success {
+                self.showToast(message: result.message!, styleColor: .white, backgroundColor: .systemGreen)
+            }else {
+                self.showToast(message: result.message!, styleColor: .white, backgroundColor: .red)
+            }
+        } failure: { err in
+            DispatchQueue.main.async {
+                self.hideLoader()
+            }
+            self.showToast(message: err, styleColor: .white, backgroundColor: .red)
+        }
+            
+        } else {
+            Service.Sch_Update(name:nameTxt,date:nextdateTxt,id: "\(sch_Data!.id)", Fajr: fajrTime, Dhuhr: dhuhrTime, Asr: asrTime, Maghrib: magribTime, Isha: ishaTime)  { result in
+                DispatchQueue.main.async {
+                    self.hideLoader()
+                }
+                if result.success {
+                    self.showToast(message: result.message!, styleColor: .white, backgroundColor: .systemGreen)
+                }else {
+                    self.showToast(message: result.message!, styleColor: .white, backgroundColor: .red)
+                }
+            } failure: { err in
+                DispatchQueue.main.async {
+                    self.hideLoader()
+                }
+                self.showToast(message: err, styleColor: .white, backgroundColor: .red)
+            }
+
+        }
+        }
+
+    }
+
+    /*
+    // MARK: - Navigation
+
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using segue.destination.
+        // Pass the selected object to the new view controller.
+    }
+    */
+
+}

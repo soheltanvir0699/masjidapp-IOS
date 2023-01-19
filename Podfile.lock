@@ -1,0 +1,63 @@
+PODS:
+  - Adhan (1.4.0)
+  - Alamofire (5.6.2)
+  - DatePickerDialog (4.0)
+  - IQKeyboardManagerSwift (6.3.0)
+  - M13Checkbox (3.4.0)
+  - MarqueeLabel (4.3.0)
+  - OneSignalXCFramework (3.11.2):
+    - OneSignalXCFramework/OneSignalCore (= 3.11.2)
+    - OneSignalXCFramework/OneSignalExtension (= 3.11.2)
+    - OneSignalXCFramework/OneSignalOutcomes (= 3.11.2)
+  - OneSignalXCFramework/OneSignalCore (3.11.2)
+  - OneSignalXCFramework/OneSignalExtension (3.11.2):
+    - OneSignalXCFramework/OneSignalCore
+    - OneSignalXCFramework/OneSignalOutcomes
+  - OneSignalXCFramework/OneSignalOutcomes (3.11.2):
+    - OneSignalXCFramework/OneSignalCore
+  - SDWebImage (5.13.2):
+    - SDWebImage/Core (= 5.13.2)
+  - SDWebImage/Core (5.13.2)
+  - SideMenu (6.5.0)
+  - Toast-Swift (5.0.1)
+
+DEPENDENCIES:
+  - Adhan
+  - Alamofire
+  - DatePickerDialog
+  - IQKeyboardManagerSwift (= 6.3.0)
+  - M13Checkbox
+  - MarqueeLabel
+  - OneSignalXCFramework (< 4.0, >= 3.0.0)
+  - SDWebImage (~> 5.0)
+  - SideMenu
+  - Toast-Swift (~> 5.0.1)
+
+SPEC REPOS:
+  trunk:
+    - Adhan
+    - Alamofire
+    - DatePickerDialog
+    - IQKeyboardManagerSwift
+    - M13Checkbox
+    - MarqueeLabel
+    - OneSignalXCFramework
+    - SDWebImage
+    - SideMenu
+    - Toast-Swift
+
+SPEC CHECKSUMS:
+  Adhan: a14251a1dc1aa9cb9097db183cefbbdd8b736ea2
+  Alamofire: d368e1ff8a298e6dde360e35a3e68e6c610e7204
+  DatePickerDialog: ccff2f91ff7a018057a4d72fa5ad6de49c8cb0cd
+  IQKeyboardManagerSwift: a8228c257614af98743b4cd8584637025f36358f
+  M13Checkbox: 6f59404540ac98ba83a3d1afac335895a40c6a5d
+  MarqueeLabel: 02f5ac8fd6877c94564556cb93fa86c70c08baeb
+  OneSignalXCFramework: 81ceac017a290f23793443323090cfbe888f74ea
+  SDWebImage: 72f86271a6f3139cc7e4a89220946489d4b9a866
+  SideMenu: f583187d21c5b1dd04c72002be544b555a2627a2
+  Toast-Swift: 9b6a70f28b3bf0b96c40d46c0c4b9d6639846711
+
+PODFILE CHECKSUM: 744eceda05bed21da4f91c0981b3510dca0201fa
+
+COCOAPODS: 1.11.2
